@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>My Simple Website</title>
+
+    <style>
+        /* General Styles */
+        html {
+            scroll-behavior: smooth; /* Added smooth scrolling */
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background-color: #333;
+            color: #f4f4f4;
+        }
+
+        header, footer, nav {
+            background: #1a1a1a;
+            color: white;
+        }
+
+        header {
+            padding: 1rem 0;
+            text-align: center;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 250px;
+            padding: 1rem;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            border: 1px solid rgb(255, 179, 0);
+            box-sizing: border-box;
+            border-radius: 8px;
+        }
+
+        nav a {
+            display: block;
+            margin: 1rem 0;
+            color: white;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            transition: color 0.2s;
+            z-index: 1;
+        }
+
+        nav a::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(120deg, #2196f3 60%, #21cbf3 100%);
+            opacity: 0.25;
+            transition: width 0.3s cubic-bezier(.4, 0, .2, 1);
+            z-index: 0;
+        }
+
+        nav a:hover::before {
+            width: 100%;
+        }
+
+        nav a:hover {
+            color: #90caf9;
+        }
+
+        #menuToggle {
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+        }
+
+        .card-container {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        .card {
+            flex: 0 0 auto;
+            scroll-snap-align: center;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1rem;
+            width: 300px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-mode .card {
+            background: #444;
+            border-color: #555;
+        }
+
+        main {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        #themeToggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: white;
+            z-index: 10;
+        }
+
+        /* Intro Text */
+        #introText {
+            position: fixed;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 20;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 2rem 3rem;
+            border-radius: 10px;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        #dustText span {
+            display: inline-block;
+            opacity: 1;
+            transform: translate(0, 0);
+            transition: transform 1s ease, opacity 1s ease;
+        }
+
+        .dust {
+            animation: disperse 1s forwards;
+        }
+
+        @keyframes disperse {
+            100% {
+                opacity: 0;
+                transform: translateX(calc(20px - 40px * random()))
+                           translateY(calc(-20px + 40px * random()))
+                           rotateZ(60deg);
+            }
+        }
+
+        /* Homepage Button */
+        #HomepageButton {
+            margin: 0;
+            height: auto;
+            background: transparent;
+            padding: 0;
+            border: none;
+            cursor: pointer;
+            letter-spacing: 3px;
+            text-decoration: none;
+            font-size: 2em;
+            font-family: "Arial";
+            position: relative;
+            text-transform: uppercase;
+            color: transparent;
+            -webkit-text-stroke: 1px rgba(255, 255, 255, 0.6);
+        }
+
+        #HomepageButton .hover-text {
+            position: absolute;
+            box-sizing: border-box;
+            color: #37FF8B;
+            width: 0%;
+            inset: 0;
+            border-right: 6px solid #37FF8B;
+            overflow: hidden;
+            transition: 0.5s;
+            -webkit-text-stroke: 1px #37FF8B;
+        }
+
+        #HomepageButton:hover .hover-text {
+            width: 100%;
+            filter: drop-shadow(0 0 23px #37FF8B);
+        }
+        
+        /* Portfolio section - removed bg-white/bg-gray-900 */
+        .portfolio-section {
+            padding: 2rem 0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Background Video -->
+    <video id="bgVideo" autoplay muted playsinline
+        style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; z-index: -2;">
+        <source src="" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <!-- Dark Overlay -->
+    <div id="bgOverlay" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        background: rgba(0,0,0,0.75); z-index: -1; pointer-events: none;"></div>
+
+    <!-- Intro Text -->
+    <div id="introText">
+        <h1 id="dustText">Welcome</h1>
+    </div>
+
+    <!-- Mute Button -->
+    <button id="muteToggle" style="
+        position: fixed;
+        bottom: 1rem;
+        right: 1rem;
+        background: rgba(0,0,0,0.7);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        font-size: 1.2rem;
+        cursor: pointer;
+        z-index: 11;">
+    </button>
+
+    <!-- Sidebar Navigation -->
+    <header>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#">About</a>
+            <a href="#">Services</a>
+            <a href="#">Contact</a>
+        </nav>
+        <button id="menuToggle">☰</button>
+    </header>
+
+    <!-- Section - removed bg-white dark:bg-gray-900 class -->
+    <section class="portfolio-section">
+        <div class="container px-6 py-12 mx-auto">
+            <h1 class="text-2xl font-semibold text-gray-800 lg:text-3xl dark:text-white">Portfolio</h1>
+
+            <div class="mt-8 xl:mt-16 lg:flex lg:-mx-12">
+                <div class="flex-1 mt-8 lg:mx-12 lg:mt-0">
+                    <div class="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3 ">
+                        <div>
+                            <img class="object-cover w-full rounded-lg h-80 "
+                                src="https://images.unsplash.com/photo-1621111848501-8d3634f82336?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1565&q=80"
+                                alt="">
+                            <h2 class="mt-3 text-lg font-semibold text-gray-800 capitalize dark:text-white">Best website
+                                collections</h2>
+                            <p class="mt-1 text-md tracking-wider text-blue-500 uppercase dark:text-blue-400 ">Website</p>
+                        </div>
+
+                        <div>
+                            <img class="object-cover w-full rounded-lg h-80 "
+                                src="https://images.unsplash.com/photo-1621609764180-2ca554a9d6f2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80"
+                                alt="">
+                            <h2 class="mt-3 text-lg font-semibold text-gray-800 capitalize dark:text-white">Block of Ui kit
+                                collections</h2>
+                            <p class="mt-1 text-md tracking-wider text-blue-500 uppercase dark:text-blue-400 ">Ui kit</p>
+                        </div>
+
+                        <div>
+                            <img class="object-cover w-full rounded-lg h-80 "
+                                src="https://images.unsplash.com/photo-1531403009284-440f080d1e12?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
+                                alt="">
+                            <h2 class="mt-3 text-lg font-semibold text-gray-800 capitalize dark:text-white">Ton's of mobile
+                                mockup</h2>
+                            <p class="mt-1 text-md tracking-wider text-blue-500 uppercase dark:text-blue-400 ">Mockups</p>
+                        </div>
+                        
+                        <!-- New Card 4 -->
+                        <div>
+                            <img class="object-cover w-full rounded-lg h-80 "
+                                src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
+                                alt="">
+                            <h2 class="mt-3 text-lg font-semibold text-gray-800 capitalize dark:text-white">Digital art
+                                portfolio</h2>
+                            <p class="mt-1 text-md tracking-wider text-blue-500 uppercase dark:text-blue-400 ">Digital Art</p>
+                        </div>
+                        
+                        <!-- New Card 5 -->
+                        <div>
+                            <img class="object-cover w-full rounded-lg h-80 "
+                                src="https://images.unsplash.com/photo-1618761714954-0b8cd0026356?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
+                                alt="">
+                            <h2 class="mt-3 text-lg font-semibold text-gray-800 capitalize dark:text-white">3D rendering
+                                collection</h2>
+                            <p class="mt-1 text-md tracking-wider text-blue-500 uppercase dark:text-blue-400 ">3D Design</p>
+                        </div>
+                        
+                        <!-- New Card 6 -->
+                        <div>
+                            <img class="object-cover w-full rounded-lg h-80 "
+                                src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
+                                alt="">
+                            <h2 class="mt-3 text-lg font-semibold text-gray-800 capitalize dark:text-white">Photography
+                                showcase</h2>
+                            <p class="mt-1 text-md tracking-wider text-blue-500 uppercase dark:text-blue-400 ">Photography</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scripts -->
+    <script>
+        window.addEventListener('load', () => {
+            const dustText = document.getElementById('dustText');
+            const text = dustText.textContent;
+            dustText.textContent = '';
+
+            for (let char of text) {
+                const span = document.createElement('span');
+                span.textContent = char;
+                dustText.appendChild(span);
+            }
+
+            setTimeout(() => {
+                const spans = dustText.querySelectorAll('span');
+                spans.forEach(span => {
+                    const angle = Math.random() * 2 * Math.PI;
+                    const radius = Math.random() * 100;
+                    const x = Math.cos(angle) * radius;
+                    const y = Math.sin(angle) * radius;
+
+                    span.style.transition = 'transform 1s ease, opacity 1s ease';
+                    span.style.transform = `translate(${x}px, ${y}px) rotate(${Math.random() * 720 - 360}deg)`;
+                    span.style.opacity = 0;
+                });
+
+                setTimeout(() => {
+                    const intro = document.getElementById('introText');
+                    if (intro) intro.remove();
+                }, 1200);
+            }, 3500);
+        });
+
+        // Toggle sidebar
+        const menuToggle = document.getElementById('menuToggle');
+        const nav = document.querySelector('nav');
+        menuToggle.addEventListener('click', () => {
+            nav.style.transform = nav.style.transform === 'translateX(0%)' ? 'translateX(-100%)' : 'translateX(0%)';
+        });
+
+        // Video logic
+        const videoFiles = [
+            'Videos/Paragon.mp4',
+            'Videos/ReawakeR.mp4',
+            'Videos/BlueGlass.mp4',
+            'Videos/DEADEND.mp4',
+            'Videos/FullMoonFullLife.mp4',
+            'Videos/Inertia.mp4',
+            'Videos/Kontinuum.mp4',
+            'Videos/OnTheJourney.mp4',
+            'Videos/Persona5PhantomXOpening.mp4'
+        ];
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        let shuffledVideos = [...videoFiles];
+        shuffleArray(shuffledVideos);
+        let currentVideo = Math.floor(Math.random() * shuffledVideos.length);
+
+        const bgVideo = document.getElementById('bgVideo');
+        const source = bgVideo.querySelector('source');
+        bgVideo.volume = 0.1;
+        source.src = shuffledVideos[currentVideo];
+        bgVideo.load();
+        bgVideo.play();
+
+        // Fix for video progression - using 'ended' event on the video element directly
+        bgVideo.addEventListener('ended', function() {
+            currentVideo = (currentVideo + 1) % shuffledVideos.length;
+            source.src = shuffledVideos[currentVideo];
+            bgVideo.load();
+            bgVideo.play();
+            console.log('Video ended, playing next video:', shuffledVideos[currentVideo]);
+        });
+
+        // Mute toggle
+        const muteToggle = document.getElementById('muteToggle');
+        function updateMuteButton() {
+            muteToggle.textContent = bgVideo.muted ? '🔇' : '🔊';
+        }
+
+        muteToggle.addEventListener('click', () => {
+            bgVideo.muted = !bgVideo.muted;
+            updateMuteButton();
+        });
+
+        updateMuteButton();
+    </script>
+</body>
+</html>
